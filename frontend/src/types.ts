@@ -50,6 +50,7 @@ export type Settings = {
 };
 
 export type Profile = {
+  isMember: boolean;
   questionStats: Record<string, QuestionStat>;
   sessions: SessionRecord[];
   trainingPlan: TrainingPlan;

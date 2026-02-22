@@ -15,6 +15,7 @@ function defaultQuestionStat(): QuestionStat {
 
 export function createDefaultProfile(): Profile {
   return {
+    isMember: false,
     questionStats: {},
     sessions: [],
     trainingPlan: {

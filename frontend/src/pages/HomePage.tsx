@@ -5,14 +5,25 @@ import { getReadinessStatus } from "../lib/profile";
 import { useProfile } from "../state/ProfileContext";
 
 export function HomePage() {
-  const { profile, setTestSize } = useProfile();
+  const { profile, setTestSize, setMembership } = useProfile();
   const readiness = getReadinessStatus(profile);
 
   return (
     <div className="page-wrap">
       <Card>
-        <h1 className="title">Подготовка к экзамену</h1>
-        <p className="subtitle">Режимы обучения и контроль готовности к сдаче</p>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
+          <div>
+            <h1 className="title">Подготовка к экзамену</h1>
+            <p className="subtitle">Режимы обучения и контроль готовности к сдаче</p>
+          </div>
+          <div
+            className={`badge ${profile.isMember ? "badge-member" : "badge-guest"}`}
+            onClick={() => setMembership(!profile.isMember)}
+            style={{ cursor: "pointer" }}
+          >
+            {profile.isMember ? "Member" : "Guest"}
+          </div>
+        </div>
 
         <div className="mode-grid">
           <Link to="/learn">
@@ -24,8 +35,10 @@ export function HomePage() {
           <Link to="/marathon">
             <Button>Marathon</Button>
           </Link>
-          <Link to="/answers">
-            <Button variant="ghost">Все ответы подряд</Button>
+          <Link to={profile.isMember ? "/answers" : "#"} className={!profile.isMember ? "disabled-link" : ""}>
+            <Button variant="ghost" disabled={!profile.isMember}>
+              Все ответы подряд {!profile.isMember && "🔒"}
+            </Button>
           </Link>
           <Link to="/training">
             <Button variant="ghost">План на 14 дней</Button>

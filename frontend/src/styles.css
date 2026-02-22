@@ -327,6 +327,30 @@ a {
   font-size: 1.1rem;
 }
 
+.badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-member {
+  background: #e7fff4;
+  color: #1f8f5f;
+  border: 1px solid #75c7a1;
+}
+
+.badge-guest {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+.disabled-link {
+  pointer-events: none;
+}
+
 @media (max-width: 600px) {
   .app-shell {
     padding: 12px 10px 24px;

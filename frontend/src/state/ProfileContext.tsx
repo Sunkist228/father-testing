@@ -12,7 +12,8 @@ type ProfileAction =
   | { type: "mark-result"; payload: { questionId: string; isCorrect: boolean } }
   | { type: "complete-session"; payload: SessionRecord }
   | { type: "complete-day"; payload: { day: number } }
-  | { type: "set-test-size"; payload: { value: number } };
+  | { type: "set-test-size"; payload: { value: number } }
+  | { type: "set-membership"; payload: { value: boolean } };
 
 type ProfileContextValue = {
   profile: Profile;
@@ -20,6 +21,7 @@ type ProfileContextValue = {
   completeSession: (session: SessionRecord) => void;
   completeDay: (day: number) => void;
   setTestSize: (value: number) => void;
+  setMembership: (value: boolean) => void;
 };
 
 const ProfileContext = createContext<ProfileContextValue | null>(null);
@@ -40,6 +42,11 @@ function reducer(state: Profile, action: ProfileAction): Profile {
           sessionSizeDefault: action.payload.value
         }
       };
+    case "set-membership":
+      return {
+        ...state,
+        isMember: action.payload.value
+      };
     default:
       return state;
   }
@@ -59,7 +66,8 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         dispatch({ type: "mark-result", payload: { questionId, isCorrect } }),
       completeSession: (session) => dispatch({ type: "complete-session", payload: session }),
       completeDay: (day) => dispatch({ type: "complete-day", payload: { day } }),
-      setTestSize: (value) => dispatch({ type: "set-test-size", payload: { value } })
+      setTestSize: (value) => dispatch({ type: "set-test-size", payload: { value } }),
+      setMembership: (value) => dispatch({ type: "set-membership", payload: { value } })
     }),
     [profile]
   );
