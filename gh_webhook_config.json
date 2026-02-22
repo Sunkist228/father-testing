@@ -1,0 +1,9 @@
+{
+  "name": "web",
+  "active": true,
+  "events": ["push"],
+  "config": {
+    "url": "https://jenkins.devflux.ru/github-webhook/",
+    "content_type": "json"
+  }
+}
