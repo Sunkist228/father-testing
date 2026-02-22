@@ -58,17 +58,17 @@ pipeline {
                     CLUSTER_IP=$(kubectl get svc jenkins-notify-service -n devops-tools -o jsonpath='{.spec.clusterIP}' 2>/dev/null) || true
                     if [ -n "$CLUSTER_IP" ]; then
                         NOTIFICATION_JSON=$(cat <<EOF
-                        {
-                            "job_name": "${JOB_NAME}",
-                            "build_number": ${BUILD_NUMBER},
-                            "status": "SUCCESS",
-                            "url": "${BUILD_URL}",
-                            "message": "Успешный деплой father-testing",
-                            "author": "Jenkins",
-                            "branch": "${BRANCH_NAME}"
-                        }
-                        EOF
-                        )
+{
+    "job_name": "${JOB_NAME}",
+    "build_number": ${BUILD_NUMBER},
+    "status": "SUCCESS",
+    "url": "${BUILD_URL}",
+    "message": "Успешный деплой father-testing",
+    "author": "Jenkins",
+    "branch": "master"
+}
+EOF
+)
                         curl -s -X POST "http://$CLUSTER_IP/jenkins/notify" \
                             -H "Content-Type: application/json" \
                             -H "X-API-Key: 23Asa9DjE1aeGAPdSpGPJQxelQzutS5Hr6554kIiTAweV8KILP9yf82LNUhZ5F06" \
