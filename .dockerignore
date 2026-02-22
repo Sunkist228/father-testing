@@ -1,0 +1,9 @@
+raw_text.txt
+parser.py
+__pycache__
+*.pyc
+.git
+.env
+*.md
+frontend/node_modules
+frontend/tests

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Платформа тестирования</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0a0a0c;
+            color: #ffffff;
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #1c1c1f;
+            border: 2px solid #2d2d33;
+            border-radius: 8px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #f1f1f1;
+            border-bottom: 3px solid #e63946;
+            padding-bottom: 10px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            background-color: transparent;
+            color: #ffffff;
+            border: 2px solid #e63946;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .menu-buttons button:hover {
+            background-color: #e63946;
+            color: #ffffff;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: bold;
+            color: #a8a8b3;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            border-left: 4px solid #e63946;
+            padding-left: 15px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            background-color: #2a2a2f;
+            border: 2px solid #3f3f46;
+            text-transform: none;
+            font-weight: normal;
+            font-size: 16px;
+            text-align: left;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .option-btn:hover {
+            border-color: #a8a8b3;
+        }
+
+        .option-btn.correct {
+            background-color: #1e3a29;
+            border-color: #2d6a4f;
+            color: #d8f3dc;
+        }
+
+        .option-btn.wrong {
+            background-color: #3a1e1e;
+            border-color: #780000;
+            color: #ffb3b3;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .action-btn {
+            background-color: #e63946;
+            border-color: #e63946;
+        }
+
+        .action-btn:hover {
+            background-color: #c1121f;
+            border-color: #c1121f;
+        }
+
+        .result-screen {
+            text-align: center;
+        }
+
+        .result-score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #e63946;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+                border: none;
+                border-radius: 0;
+                margin-top: 0;
+            }
+            body {
+                padding: 0;
+                background-color: #1c1c1f;
+            }
+            .question-text {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="menuScreen">
+        <h1>Подготовка к тестированию</h1>
+        <div class="menu-buttons">
+            <button onclick="startMode('learn')">Режим заучивания</button>
+            <button onclick="startMode('test')">Контрольная (Тест)</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="quizScreen">
+        <div class="status-bar">
+            <span id="progressText">Вопрос 1 / 211</span>
+            <span id="modeText">Заучивание</span>
+        </div>
+        <div class="question-text" id="questionText">Текст вопроса будет здесь</div>
+        <div class="options-container" id="optionsContainer">
+        </div>
+        <button class="action-btn hidden" id="nextBtn" onclick="nextQuestion()">Следующий вопрос</button>
+        <button class="action-btn" id="finishBtn" onclick="finishQuiz()" style="display: none; background-color: #2d2d33; border-color: #2d2d33; margin-top: 15px;">Завершить досрочно</button>
+    </div>
+
+    <div class="container hidden" id="resultScreen">
+        <h1>Результат</h1>
+        <div class="result-screen">
+            <p>Тестирование завершено.</p>
+            <div class="result-score" id="scoreText">0 / 211</div>
+            <p id="percentageText" style="margin-bottom: 30px; font-size: 18px; color: #a8a8b3;">0% правильных ответов</p>
+            <button onclick="returnToMenu()">Вернуться в меню</button>
+        </div>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentMode = '';
+        let currentIndex = 0;
+        let correctAnswersCount = 0;
+
+        const menuScreen = document.getElementById('menuScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const progressText = document.getElementById('progressText');
+        const modeText = document.getElementById('modeText');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishBtn = document.getElementById('finishBtn');
+        const scoreText = document.getElementById('scoreText');
+        const percentageText = document.getElementById('percentageText');
+
+        // Загрузка вопросов с сервера
+        async function loadQuestions() {
+            try {
+                const response = await fetch('/api/questions');
+                questions = await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки вопросов:', error);
+                questionText.innerText = 'Не удалось загрузить вопросы. Проверьте подключение к серверу.';
+            }
+        }
+
+        function startMode(mode) {
+            if (questions.length === 0) {
+                alert("Вопросы еще не загружены. Подождите пару секунд.");
+                return;
+            }
+            currentMode = mode;
+            currentIndex = 0;
+            correctAnswersCount = 0;
+
+            menuScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            finishBtn.style.display = 'block';
+
+            if (mode === 'learn') {
+                modeText.innerText = 'Заучивание';
+            } else {
+                modeText.innerText = 'Контрольная';
+            }
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            nextBtn.classList.add('hidden');
+            optionsContainer.innerHTML = '';
+
+            const currentQuestion = questions[currentIndex];
+            questionText.innerText = currentQuestion.question;
+            progressText.innerText = `Вопрос ${currentIndex + 1} / ${questions.length}`;
+
+            // Получаем список правильных индексов (один или несколько)
+            let correctIndices = Array.isArray(currentQuestion.correctIndex)
+                ? currentQuestion.correctIndex
+                : [currentQuestion.correctIndex];
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.innerText = option;
+
+                if (currentMode === 'learn') {
+                    // В режиме заучивания сразу подсвечиваем все правильные ответы
+                    if (correctIndices.includes(index)) {
+                        button.classList.add('correct');
+                    }
+                    button.disabled = true;
+                } else {
+                    // В режиме контрольной вешаем обработчик клика
+                    button.onclick = () => handleAnswer(index, button);
+                }
+
+                optionsContainer.appendChild(button);
+            });
+
+            if (currentMode === 'learn') {
+                nextBtn.classList.remove('hidden');
+                if (currentIndex === questions.length - 1) {
+                    nextBtn.innerText = 'Завершить';
+                } else {
+                    nextBtn.innerText = 'Следующий вопрос';
+                }
+            }
+        }
+
+        function handleAnswer(selectedIndex, clickedButton) {
+            const currentQuestion = questions[currentIndex];
+            const allButtons = optionsContainer.querySelectorAll('.option-btn');
+
+            // Получаем список правильных индексов
+            let correctIndices = Array.isArray(currentQuestion.correctIndex)
+                ? currentQuestion.correctIndex
+                : [currentQuestion.correctIndex];
+
+            // Проверяем, попал ли выбранный вариант в список правильных
+            if (correctIndices.includes(selectedIndex)) {
+                clickedButton.classList.add('correct');
+                correctAnswersCount++;
+            } else {
+                clickedButton.classList.add('wrong');
+            }
+
+            // Блокируем все кнопки после ответа и показываем зеленым все верные
+            allButtons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (correctIndices.includes(idx)) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            nextBtn.classList.remove('hidden');
+            if (currentIndex === questions.length - 1) {
+                nextBtn.innerText = 'Показать результат';
+            } else {
+                nextBtn.innerText = 'Следующий вопрос';
+            }
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex >= questions.length) {
+                finishQuiz();
+            } else {
+                renderQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            const totalQuestions = currentMode === 'test' ? currentIndex + 1 : questions.length;
+            const percentage = Math.round((correctAnswersCount / totalQuestions) * 100) || 0;
+
+            if (currentMode === 'learn') {
+                scoreText.innerText = `Пройдено`;
+                percentageText.innerText = `Все ${questions.length} вопросов просмотрены.`;
+            } else {
+                scoreText.innerText = `${correctAnswersCount} / ${totalQuestions}`;
+                percentageText.innerText = `${percentage}% правильных ответов`;
+            }
+        }
+
+        function returnToMenu() {
+            resultScreen.classList.add('hidden');
+            menuScreen.classList.remove('hidden');
+        }
+
+        // Инициализация загрузки при старте
+        window.onload = loadQuestions;
+    </script>
+</body>
+</html>
